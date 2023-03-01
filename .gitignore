@@ -127,3 +127,10 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+#remove weight files
+*.pt
+*.pth
+
+#remove video files 
+*.mp4
