@@ -1,7 +1,26 @@
 import cv2
+import numpy as np
 
 from efootball.src.utils.geometry import define_center_point
 from efootball.src.constants.teams import TEAMS_COLORS_RGB
+
+def draw_bouding_box(image, box_coordiantes, color): 
+    cv2.rectangle(image,
+                (box_coordiantes[0], box_coordiantes[1]),
+                (box_coordiantes[2], box_coordiantes[3]),
+                color,
+                2
+            )
+
+def draw_based_on_predictions(image, predictions):
+    for mask, team in zip(predictions["masks"], predictions['teams']):
+        segmentation = np.where(mask==True)
+        x_min = int(np.min(segmentation[1]))
+        x_max = int(np.max(segmentation[1]))
+        y_min = int(np.min(segmentation[0]))
+        y_max = int(np.max(segmentation[0]))
+        box = [x_min, y_min, x_max, y_max]
+        draw_bouding_box(image, box, TEAMS_COLORS_RGB[team]["color_code"])
 
 def draw_metricis(teams_number, team1_percentage, team2_percentage, frame):
         team1 = TEAMS_COLORS_RGB[teams_number[0]]

@@ -14,7 +14,7 @@ class PersonDetector():
         cfg.CLASS_STRING = ['person']
         self.predictor = DefaultPredictor(cfg)
     
-    def detectPersons(self, image):
+    def detect_persons(self, image):
         outputs = self.predictor(image)
         labels = outputs['instances'].pred_classes
         scores = outputs["instances"].scores
