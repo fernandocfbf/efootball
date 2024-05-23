@@ -15,7 +15,7 @@ class BallDetector():
         cfg.MODEL.DEVICE='cuda'
         self.predictor = DefaultPredictor(cfg)
     
-    def detectBalls(self, image):
+    def detect_balls(self, image):
         outputs = self.predictor(image)
         scores = outputs["instances"].scores.tolist()
         boxes = outputs['instances'].pred_boxes.tensor.tolist()

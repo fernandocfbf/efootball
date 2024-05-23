@@ -11,6 +11,8 @@ def draw_bouding_box(image, box_coordiantes, color):
                 color,
                 2
             )
+def draw_circle(image, point, color):
+    cv2.circle(image, point, radius=12, color=color, thickness=2)
 
 def draw_based_on_predictions(image, predictions):
     for mask, team in zip(predictions["masks"], predictions['teams']):
@@ -22,41 +24,16 @@ def draw_based_on_predictions(image, predictions):
         box = [x_min, y_min, x_max, y_max]
         draw_bouding_box(image, box, TEAMS_COLORS_RGB[team]["color_code"])
 
-def draw_metricis(teams_number, team1_percentage, team2_percentage, frame):
-        team1 = TEAMS_COLORS_RGB[teams_number[0]]
-        team2 = TEAMS_COLORS_RGB[teams_number[1]]
-        cv2.putText(
-            frame,
-            f"{team1['color_name']}: {team1_percentage}%",
-            (20, 60),
-            cv2.FONT_HERSHEY_SIMPLEX,
-            1,
-            team1["color_code"],
-            2
-        )
-        cv2.putText(
-            frame,
-            f"{team2['color_name']}: {team2_percentage}%",
-            (20, 90),
-            cv2.FONT_HERSHEY_SIMPLEX,
-            1,
-            team2["color_code"],
-            2
-        )
+def draw_line_between_points(image, p1, p2):
+    cv2.line(image, (p1[0], p1[1]), (p2[0], p2[1]),(0, 255, 0), thickness=2, lineType=4)
 
-def draw_bboxes(image, player_informations, ball_information):
-    for player_information in player_informations:
-        box_person = player_information[0]
-        team_color = player_information[1]
-        cv2.rectangle(
-            image,
-            (box_person[2], box_person[0]),
-            (box_person[3], box_person[1]),
-            TEAMS_COLORS_RGB[team_color]["color_code"],
-            2
-        )
-    if ball_information:
-        cv2.circle(image, (ball_information[0], ball_information[1]), radius=12, color=(255, 255, 255), thickness=2)
+def draw_metricis(frame, teams_metrics):
+        position = 60
+        for team_number in teams_metrics: 
+            team_color = TEAMS_COLORS_RGB[team_number]
+            team_percentage = teams_metrics[team_number]
+            cv2.putText(frame, f"{team_color['color_name']}: {team_percentage}%", (20, position), cv2.FONT_HERSHEY_SIMPLEX, 1, team_color["color_code"], 2)
+            position += 30
 
 def draw_perspective_field(image, field_template, player_positions):
     for box_coordinates in player_positions:

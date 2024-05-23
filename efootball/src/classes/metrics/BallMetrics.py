@@ -1,13 +1,11 @@
 import math
-import cv2
 
 from efootball.src.utils.geometry import define_center_point
+from efootball.src.utils.visualization import draw_line_between_points
 
 class BallMetrics():
     def __init__(self):
-        self.position = None
         self.total_frames = 0
-        self.possession = None
     
     def init_possession(self, teams):
         self.possession = {team: 0 for team in teams}
@@ -17,24 +15,28 @@ class BallMetrics():
             return 0
         possession = round((self.possession[team]/self.total_frames)*100, 2)
         return possession
+    
+    def get_metrics(self):
+        metrics = dict()
+        for team in self.possession:
+            percentage = (self.possession[team]/self.total_frames)*100
+            percentage = round(percentage, 2)
+            metrics[team] = percentage
+        return metrics
 
-    def draw_line_to_closest_player(self, frame, ball_center_position, closest_player):
-        cv2.line(frame, (ball_center_position[0], ball_center_position[1]),
-            (closest_player["position"][0], closest_player["position"][1]),
-            (0, 255, 0), thickness=2, lineType=4)
-        
     def calculate_possession(self, frame, ball_mask, players_masks):
         ball_pos = ball_mask["boxes"][0]
-        ball_center_position = define_center_point(ball_pos[0], ball_pos[2], ball_pos[1], ball_pos[3])
+        ball_center_position = define_center_point(ball_pos)
         closest_player = {"team": -1, "dist": math.inf, "position": [0,0]}
-        for player_info in players_masks:
-            poistion = player_info[0]
-            player_center_position = define_center_point(poistion[2], poistion[3], poistion[0], poistion[1])
+        for index in range(len(players_masks["boxes"])):
+            player_position = players_masks["boxes"][index]
+            player_team = players_masks["teams"][index]
+            player_center_position = define_center_point(player_position)
             dist_for_ball = math.dist(ball_center_position, player_center_position)
             if dist_for_ball < closest_player["dist"]:
                 closest_player["dist"] = dist_for_ball
-                closest_player["team"] = player_info[1]
+                closest_player["team"] = player_team
                 closest_player["position"] = player_center_position
         self.possession[closest_player["team"]] += 1
         self.total_frames += 1
-        self.draw_line_to_closest_player(frame, ball_center_position, closest_player)
+        draw_line_between_points(frame, ball_center_position, closest_player["position"])

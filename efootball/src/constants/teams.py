@@ -4,3 +4,5 @@ TEAMS_COLORS_RGB = {
     2: {"color_code":(0,0,0), "color_name": "black"},
     3: {"color_code": (0,255,0), "color_name": "green"}
 }
+
+BALL_COLOR = (52, 82, 235)

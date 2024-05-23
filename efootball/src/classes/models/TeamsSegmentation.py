@@ -37,12 +37,14 @@ class TeamsSegmentation():
         teams = unique[np.argsort(counts)[-2:]].tolist()
         self.teams = teams
     
+    #TODO: adicionar labels aqui para filtrar somente os players
     def get_players(self, frame, person_predictions):
-        players = {"masks":[], "teams":[]}
-        for mask in np.asarray(person_predictions["masks"].to("cpu")):
+        players = {"boxes":[], "teams":[], "masks":[]}
+        for mask, box in zip(np.asarray(person_predictions["masks"].to("cpu")), person_predictions['boxes']):
             player_avg_color = self.get_player_avg_color(frame, mask)
             player_team = self.kmeans.predict([player_avg_color])[0]
             if player_team in self.teams:
+                players["boxes"].append(box)
                 players["masks"].append(mask)
                 players["teams"].append(player_team)
         return players

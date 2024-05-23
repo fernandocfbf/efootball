@@ -27,3 +27,13 @@ def warp_image(img, H, out_shape=None):
         for img_, H_ in zip(img, H):
             out_img.append(cv2.warpPerspective(img_, H_, dsize=out_shape))
         return np.array(out_img)
+    
+def merge_template(img, warped_template):
+    valid_index = warped_template[:, :, 0] > 0.0
+    overlay = (
+        img[valid_index].astype("float32")
+        + warped_template[valid_index].astype("float32")
+    ) / 2
+    new_image = np.copy(img)
+    new_image[valid_index] = overlay
+    return new_image    
