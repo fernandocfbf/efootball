@@ -1,11 +1,10 @@
 import math
 
 from efootball.src.utils.geometry import define_center_point
-from efootball.src.utils.visualization import draw_line_between_points
 
 class BallMetrics():
     def __init__(self):
-        self.total_frames = 0
+        self.total_frames = 1
     
     def init_possession(self, teams):
         self.possession = {team: 0 for team in teams}
@@ -39,4 +38,3 @@ class BallMetrics():
                 closest_player["position"] = player_center_position
         self.possession[closest_player["team"]] += 1
         self.total_frames += 1
-        draw_line_between_points(frame, ball_center_position, closest_player["position"])

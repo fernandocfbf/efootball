@@ -12,7 +12,7 @@ def draw_bouding_box(image, box_coordiantes, color):
                 2
             )
 def draw_circle(image, point, color):
-    cv2.circle(image, point, radius=12, color=color, thickness=2)
+    cv2.circle(image, point, radius=12, color=color, thickness=4)
 
 def draw_based_on_predictions(image, predictions):
     for mask, team in zip(predictions["masks"], predictions['teams']):
@@ -24,15 +24,12 @@ def draw_based_on_predictions(image, predictions):
         box = [x_min, y_min, x_max, y_max]
         draw_bouding_box(image, box, TEAMS_COLORS_RGB[team]["color_code"])
 
-def draw_line_between_points(image, p1, p2):
-    cv2.line(image, (p1[0], p1[1]), (p2[0], p2[1]),(0, 255, 0), thickness=2, lineType=4)
-
 def draw_metricis(frame, teams_metrics):
-        position = 60
+        position = 700
         for team_number in teams_metrics: 
             team_color = TEAMS_COLORS_RGB[team_number]
             team_percentage = teams_metrics[team_number]
-            cv2.putText(frame, f"{team_color['color_name']}: {team_percentage}%", (20, position), cv2.FONT_HERSHEY_SIMPLEX, 1, team_color["color_code"], 2)
+            cv2.putText(frame, f"{team_color['color_name']}: {team_percentage}%", (1600, position), cv2.FONT_HERSHEY_SIMPLEX, 1, team_color["color_code"], 2)
             position += 30
 
 def draw_perspective_field(image, field_template, player_positions):

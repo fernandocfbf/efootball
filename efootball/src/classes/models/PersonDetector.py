@@ -1,3 +1,4 @@
+import torch
 from detectron2.utils.logger import setup_logger
 setup_logger()
 from detectron2 import model_zoo
@@ -12,12 +13,22 @@ class PersonDetector():
         cfg.MODEL.WEIGHTS = model_zoo.get_checkpoint_url("COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x.yaml")
         cfg.CLASS_INDICES = [0]
         cfg.CLASS_STRING = ['person']
+        self.cfg = cfg 
         self.predictor = DefaultPredictor(cfg)
     
     def detect_persons(self, image):
         outputs = self.predictor(image)
-        labels = outputs['instances'].pred_classes
-        scores = outputs["instances"].scores
-        masks = outputs['instances'].pred_masks
-        boxes = outputs['instances'].pred_boxes
-        return {"boxes": boxes, "labels":labels, "scores": scores, "masks":masks}
+        instances = outputs['instances']
+        labels = instances.pred_classes
+        scores = instances.scores
+        masks = instances.pred_masks
+        boxes = instances.pred_boxes
+        
+        # Filter instances to only include "person" class
+        person_indices = [i for i, label in enumerate(labels) if label == self.cfg.CLASS_INDICES[0]]
+        filtered_boxes = boxes[person_indices].tensor
+        filtered_labels = torch.tensor([labels[i] for i in person_indices])
+        filtered_scores = torch.tensor([scores[i] for i in person_indices])
+        filtered_masks = torch.stack([masks[i] for i in person_indices])
+        
+        return {"boxes": filtered_boxes, "labels": filtered_labels, "scores": filtered_scores, "masks": filtered_masks}
